@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import LostItem, Message
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
 
 
 class LostItemSerializer(serializers.ModelSerializer):
@@ -17,6 +18,25 @@ class LostItemSerializer(serializers.ModelSerializer):
         if self.instance is None and not attrs.get('image'):
             raise serializers.ValidationError({'image': 'Image is required for a new lost item.'})
         return attrs
+
+    def to_representation(self, instance):
+        """Return a safe representation where `image` is None when missing on disk.
+
+        Some seed data may reference filenames that aren't present in the deployed
+        media directory. Returning a broken URL leads to 404s in the client. This
+        normalizes such cases so the UI can show its built-in placeholder.
+        """
+        data = super().to_representation(instance)
+        try:
+            img = getattr(instance, 'image', None)
+            # When a file is set but doesn't actually exist in storage, hide it
+            if img and getattr(img, 'name', None):
+                if not default_storage.exists(img.name):
+                    data['image'] = None
+        except Exception:
+            # On any error determining file existence, prefer a clean fallback
+            data['image'] = None
+        return data
 
 
 class MessageSerializer(serializers.ModelSerializer):

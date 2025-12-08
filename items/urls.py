@@ -20,6 +20,9 @@ urlpatterns = [
     path('<int:pk>/', LostItemDetailView.as_view(), name='item-detail'),
     # Chat endpoints
     path('messages/', MessageListCreateView.as_view(), name='messages-list-create'),
+    # Legacy/alternate chat routes used by some clients
+    path('conversations/me/', MessageListCreateView.as_view(), name='conversations-me'),
+    path('conversations/me/send/', contact_admin, name='conversations-me-send'),
     path('admin_login/', admin_login, name='admin-login'),
     path('whoami/', whoami, name='whoami'),
     path('contact_admin/', contact_admin, name='contact-admin'),

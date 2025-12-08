@@ -9,7 +9,7 @@ services:
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.8
       - key: DJANGO_DEBUG
         value: "False"
       - key: ALLOWED_HOSTS

@@ -9,3 +9,5 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py collectstatic --noinput
 echo "Skipping build-time createsuperuser; will set/reset on startup via ItemsConfig.ready()"
+echo "Force-setting admin password via management command"
+python manage.py set_admin_password

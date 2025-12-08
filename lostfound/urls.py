@@ -18,10 +18,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/items/', include('items.urls')),
 ]
-
-if settings.DEBUG:
-    # Serve media files during development. When deploying to production, it's
-    # recommended to let the webserver (NGINX, Render static storage, etc.) serve
-    # media files and to disable this in production. For local development we
-    # mount the media URL so the app can load images from the `media/` dir.
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Serve media files. On Render, there's no separate web server; small apps
+    # can serve media directly from Django.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

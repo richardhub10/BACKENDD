@@ -20,8 +20,16 @@ class ItemsConfig(AppConfig):
 
         try:
             User = get_user_model()
-            if not User.objects.filter(username=username).exists():
+            user = User.objects.filter(username=username).first()
+            if user is None:
                 User.objects.create_superuser(username=username, email=email, password=password)
+            else:
+                # Ensure password is set to the env value so login works
+                user.set_password(password)
+                user.email = email or user.email
+                user.is_superuser = True
+                user.is_staff = True
+                user.save()
         except OperationalError:
             # Database not ready (e.g., during migrate); ignore.
             pass

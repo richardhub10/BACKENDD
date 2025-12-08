@@ -7,6 +7,10 @@ services:
     startCommand: "python -m gunicorn lostfound.wsgi:application --bind 0.0.0.0:$PORT"
     # Note: Render’s YAML does not support postDeployCommand. We run migrate and createsuperuser during build.
     autoDeploy: true
+    disks:
+      - name: media-disk
+        mountPath: /var/data
+        sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8
@@ -27,6 +31,9 @@ services:
         fromDatabase:
           name: lostfound-db
           property: connectionString
+      # Persist media uploads on the attached disk under /var/data/media
+      - key: MEDIA_ROOT
+        value: /var/data/media
     # Routes are not needed for web services; Render auto-exposes the service.
 
 databases:

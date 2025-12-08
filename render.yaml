@@ -4,7 +4,8 @@ services:
     env: python
     plan: free
     buildCommand: "pip install -r requirements.txt; python manage.py collectstatic --noinput"
-    startCommand: "gunicorn lostfound.wsgi:application"
+    startCommand: "gunicorn lostfound.wsgi:application --bind 0.0.0.0:$PORT"
+    postDeployCommand: "python manage.py migrate; python manage.py createsuperuser --noinput || true"
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
@@ -26,10 +27,7 @@ services:
         fromDatabase:
           name: lostfound-db
           property: connectionString
-    routes:
-      - type: web
-        autoWildcard: true
-        # Render auto-exposes the service; RENDER_EXTERNAL_URL will be set
+    # Routes are not needed for web services; Render auto-exposes the service.
 
 databases:
   - name: lostfound-db

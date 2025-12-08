@@ -11,12 +11,9 @@ class ItemsConfig(AppConfig):
     def ready(self):
         # Auto-create a superuser from environment variables if not present.
         # This runs at startup and is safe on Render. It ignores errors while DB is migrating.
-        username = os.getenv('DJANGO_SUPERUSER_USERNAME')
-        email = os.getenv('DJANGO_SUPERUSER_EMAIL')
-        password = os.getenv('DJANGO_SUPERUSER_PASSWORD')
-
-        if not (username and email and password):
-            return
+        username = os.getenv('DJANGO_SUPERUSER_USERNAME') or 'admin'
+        email = os.getenv('DJANGO_SUPERUSER_EMAIL') or 'admin@example.com'
+        password = os.getenv('DJANGO_SUPERUSER_PASSWORD') or 'admin'
 
         try:
             User = get_user_model()

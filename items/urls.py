@@ -9,6 +9,7 @@ from .views import (
     whoami,
     contact_admin,
     conversations,
+    health_superuser,
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path('whoami/', whoami, name='whoami'),
     path('contact_admin/', contact_admin, name='contact-admin'),
     path('conversations/', conversations, name='conversations'),
+    path('health/superuser/', health_superuser, name='health-superuser'),
 ]

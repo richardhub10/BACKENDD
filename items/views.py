@@ -12,6 +12,21 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.generics import ListCreateAPIView
 from django.db.models import Max
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_superuser(request):
+    """Report whether the configured superuser exists and is staff.
+
+    Returns JSON: {"exists": bool, "is_staff": bool, "username": str}
+    """
+    username = os.getenv('DJANGO_SUPERUSER_USERNAME') or 'admin'
+    try:
+        user = User.objects.filter(username=username).first()
+        if not user:
+            return Response({"exists": False, "is_staff": False, "username": username})
+        return Response({"exists": True, "is_staff": bool(user.is_staff), "username": user.username})
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
 
 class LostItemListCreateView(generics.ListCreateAPIView):
     queryset = LostItem.objects.order_by('-created_at')

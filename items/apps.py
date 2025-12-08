@@ -23,6 +23,7 @@ class ItemsConfig(AppConfig):
             user = User.objects.filter(username=username).first()
             if user is None:
                 User.objects.create_superuser(username=username, email=email, password=password)
+                print(f"[startup] Superuser '{username}' created.")
             else:
                 # Ensure password is set to the env value so login works
                 user.set_password(password)
@@ -30,6 +31,7 @@ class ItemsConfig(AppConfig):
                 user.is_superuser = True
                 user.is_staff = True
                 user.save()
+                print(f"[startup] Superuser '{username}' password reset and flags ensured.")
         except OperationalError:
             # Database not ready (e.g., during migrate); ignore.
             pass

@@ -3,9 +3,9 @@ services:
     name: lostfound-backend
     env: python
     plan: free
-    buildCommand: "pip install -r requirements.txt; python manage.py collectstatic --noinput"
+    buildCommand: "pip install -r requirements.txt; python manage.py migrate; python manage.py collectstatic --noinput; python manage.py createsuperuser --noinput || true"
     startCommand: "gunicorn lostfound.wsgi:application --bind 0.0.0.0:$PORT"
-    postDeployCommand: "python manage.py migrate; python manage.py createsuperuser --noinput || true"
+    # Note: Render’s YAML does not support postDeployCommand. We run migrate and createsuperuser during build.
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION

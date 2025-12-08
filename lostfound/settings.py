@@ -16,9 +16,14 @@ else:
 
 # Render provides RENDER_EXTERNAL_URL for the deployed service; include automatically.
 render_external = os.getenv("RENDER_EXTERNAL_URL")
-if render_external and render_external not in ALLOWED_HOSTS:
-    # e.g. https://lostfound-backend.onrender.com
-    ALLOWED_HOSTS.append(render_external.replace("https://", "").replace("http://", ""))
+if render_external:
+    host = render_external.replace("https://", "").replace("http://", "")
+    if host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
+
+# Allow any *.onrender.com host in production to avoid invalid Host header 400s
+if ".onrender.com" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".onrender.com")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -117,6 +122,12 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     # For cross-site cookie support in production, set SameSite=None on session cookie
     SESSION_COOKIE_SAMESITE = 'None'
+    # Trust Render hostnames for CSRF
+    csrf_origins = []
+    if render_external:
+        csrf_origins.append(render_external)
+    csrf_origins.append("https://*.onrender.com")
+    CSRF_TRUSTED_ORIGINS = csrf_origins
 else:
     # During local development keep cookies lax so the browser accepts them over HTTP
     SESSION_COOKIE_SECURE = False

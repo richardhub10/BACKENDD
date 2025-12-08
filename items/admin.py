@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.core.files.storage import default_storage
-from .models import LostItem
+from .models import LostItem, Message
 
 @admin.register(LostItem)
 class LostItemAdmin(admin.ModelAdmin):
@@ -25,3 +25,9 @@ class LostItemAdmin(admin.ModelAdmin):
                     cleared += 1
         self.message_user(request, f"Checked {total} items; cleared {cleared} missing images.")
     clear_missing_images.short_description = "Clear missing image files for selected items"
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ( 'id', 'sender', 'user', 'text', 'created_at')
+    list_filter = ('sender', 'created_at')
+    search_fields = ('text', 'user__username')

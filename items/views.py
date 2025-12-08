@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.generics import ListCreateAPIView
 from django.db.models import Max
+from django.db import connection
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_superuser(request):
@@ -26,6 +27,19 @@ def health_superuser(request):
         if not user:
             return Response({"exists": False, "is_staff": False, "username": username})
         return Response({"exists": True, "is_staff": bool(user.is_staff), "username": user.username})
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_db(request):
+    """Check if Message and LostItem tables exist to diagnose migration issues."""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('items_message','items_lostitem')")
+            rows = cursor.fetchall()
+        names = [r[0] for r in rows]
+        return Response({"has_items_message": 'items_message' in names, "has_items_lostitem": 'items_lostitem' in names, "tables": names})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 

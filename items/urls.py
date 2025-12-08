@@ -10,6 +10,7 @@ from .views import (
     contact_admin,
     conversations,
     health_superuser,
+    health_db,
 )
 
 urlpatterns = [
@@ -24,4 +25,5 @@ urlpatterns = [
     path('contact_admin/', contact_admin, name='contact-admin'),
     path('conversations/', conversations, name='conversations'),
     path('health/superuser/', health_superuser, name='health-superuser'),
+    path('health/db/', health_db, name='health-db'),
 ]
